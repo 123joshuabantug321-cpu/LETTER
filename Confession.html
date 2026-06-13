@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For You 🍵</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&family=Pacifico&display=swap" rel="stylesheet">
+
+<style>
+/* GLOBAL RESET */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Quicksand', sans-serif;
+  background: linear-gradient(135deg, #d8f3dc, #b7e4c7, #95d5b2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+  padding: 15px;
+}
+
+/* MAIN CARD */
+.container {
+  background: #ffffffcc;
+  padding: 25px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 360px;
+}
+
+/* TITLE */
+h1 {
+  color: #2d6a4f;
+  font-family: 'Pacifico', cursive;
+  font-size: 28px;
+}
+
+/* INPUT */
+input {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #95d5b2;
+  width: 100%;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+/* BUTTONS */
+button {
+  margin-top: 10px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.yes {
+  background: #52b788;
+  color: white;
+}
+
+.no {
+  background: #adb5bd;
+  color: white;
+  position: relative;
+}
+
+/* TEXT */
+#message {
+  display: none;
+  margin-top: 20px;
+  color: #1b4332;
+  white-space: pre-line;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+#question {
+  display: none;
+  margin-top: 20px;
+  font-weight: 600;
+}
+
+#response {
+  display: none;
+  margin-top: 15px;
+  font-family: 'Pacifico', cursive;
+  color: #2d6a4f;
+  font-size: 18px;
+}
+
+/* NAME INTRO */
+#nameIntro {
+  position: absolute;
+  font-size: 32px;
+  font-family: 'Pacifico', cursive;
+  color: #2d6a4f;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+
+/* FLOATING HEARTS */
+.floating {
+  position: absolute;
+  bottom: -50px;
+  animation: floatUp linear infinite;
+  pointer-events: none;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(0); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateY(-110vh); opacity: 0; }
+}
+
+/* SIDE PETALS */
+.sidePetal {
+  position: absolute;
+  top: -50px;
+  font-size: 16px;
+  opacity: 0.6;
+  animation: fallSide linear infinite;
+  pointer-events: none;
+}
+
+@keyframes fallSide {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+  20% { opacity: 0.7; }
+  100% { transform: translateY(110vh) rotate(180deg); opacity: 0; }
+}
+
+/* MOBILE TWEAKS */
+@media (max-width: 600px) {
+  h1 {
+    font-size: 24px;
+  }
+
+  .container {
+    padding: 20px;
+  }
+
+  button {
+    width: 100%;
+  }
+}
+</style>
+
+</head>
+
+<body>
+
+<div id="nameIntro">Shey</div>
+
+<div class="container">
+  <h1>🍵 Enter Password</h1>
+  <input type="password" id="password">
+  <button onclick="checkPassword()">Enter</button>
+
+  <div id="message"></div>
+
+  <div id="question">
+    Will you let me court you?<br><br>
+    <button class="yes" onclick="sayYes()">Yes 💚</button>
+    <button class="no" id="noBtn">No 😢</button>
+  </div>
+
+  <div id="response">You just made me the happiest 💚</div>
+</div>
+
+<script>
+const text = `I want to know you in a way no one else has taken the time to.
+
+I don’t just want small talk or moments that pass.
+
+I want you in my life.
+
+Not just for the good parts, but everything — the highs, the lows, the messy days, and the peaceful ones too.
+
+I want to experience all of it with you, by your side.
+
+That’s all I want.`;
+
+/* side petals */
+function createSidePetals() {
+  for (let i = 0; i < 20; i++) {
+    let petal = document.createElement("div");
+    petal.className = "sidePetal";
+    petal.innerText = "🤍";
+
+    if (Math.random() < 0.5) {
+      petal.style.left = Math.random() * 15 + "vw";
+    } else {
+      petal.style.left = 85 + Math.random() * 15 + "vw";
+    }
+
+    petal.style.animationDuration = (6 + Math.random() * 5) + "s";
+    document.body.appendChild(petal);
+  }
+}
+createSidePetals();
+
+/* typing */
+function typeMessage(callback) {
+  let i = 0;
+  let msg = document.getElementById("message");
+  msg.style.display = "block";
+
+  function typing() {
+    if (i < text.length) {
+      msg.innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typing, 30);
+    } else {
+      callback();
+    }
+  }
+  typing();
+}
+
+/* hearts */
+function createHearts() {
+  const symbols = ["💚","🌸","🍃","💗"];
+  for (let i = 0; i < 25; i++) {
+    let el = document.createElement("div");
+    el.className = "floating";
+    el.innerText = symbols[Math.floor(Math.random()*symbols.length)];
+    el.style.left = Math.random()*100 + "vw";
+    el.style.animationDuration = (5 + Math.random()*5) + "s";
+    document.body.appendChild(el);
+  }
+}
+
+/* explosion */
+function explodeHearts() {
+  const symbols = ["💚","💗","🌸","💞","💖"];
+
+  for (let i = 0; i < 80; i++) {
+    let heart = document.createElement("div");
+    heart.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+    heart.style.position = "absolute";
+    heart.style.left = "50%";
+    heart.style.top = "50%";
+    heart.style.fontSize = (12 + Math.random() * 20) + "px";
+    heart.style.pointerEvents = "none";
+
+    let angle = Math.random() * 2 * Math.PI;
+    let distance = 100 + Math.random() * 300;
+
+    let x = Math.cos(angle) * distance;
+    let y = Math.sin(angle) * distance;
+
+    heart.animate([
+      { transform: "translate(0,0)", opacity: 1 },
+      { transform: `translate(${x}px, ${y}px)`, opacity: 0 }
+    ], {
+      duration: 1500,
+      easing: "ease-out"
+    });
+
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 2000);
+  }
+}
+
+/* name intro */
+function showNameThenMessage() {
+  let name = document.getElementById("nameIntro");
+
+  name.style.opacity = 1;
+
+  setTimeout(() => {
+    name.style.opacity = 0;
+
+    setTimeout(() => {
+      typeMessage(() => {
+        document.getElementById("question").style.display = "block";
+      });
+    }, 1500);
+
+  }, 2000);
+}
+
+/* password */
+function checkPassword() {
+  let input = document.getElementById("password").value;
+  if (input === "Shey") {
+    showNameThenMessage();
+    createHearts();
+  } else {
+    alert("Wrong password 😢");
+  }
+}
+
+/* YES */
+function sayYes() {
+  document.getElementById("response").style.display = "block";
+  explodeHearts();
+}
+
+/* NO runaway */
+const noBtn = document.getElementById("noBtn");
+noBtn.addEventListener("mouseover", () => {
+  noBtn.style.position = "absolute";
+  noBtn.style.left = Math.random()*250 + "px";
+  noBtn.style.top = Math.random()*200 + "px";
+});
+</script>
+
+</body>
+</html>
