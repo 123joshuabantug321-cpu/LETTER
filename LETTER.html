@@ -1,0 +1,888 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#080808">
+    <title>Something I Want You to Know</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            min-height: 100svh;
+            background: #080808;
+            color: #eee;
+            font-family: 'DM Sans', sans-serif;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background:
+                linear-gradient(rgba(0,0,0,.58), rgba(0,0,0,.82)),
+                url("https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=2000&q=85")
+                center/cover no-repeat;
+            z-index: -2;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.16);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        button, input {
+            font: inherit;
+        }
+
+        button {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* PASSWORD SCREEN */
+
+        .password-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            background: rgba(0,0,0,.88);
+            backdrop-filter: blur(12px);
+            transition: opacity .8s ease, visibility .8s ease;
+        }
+
+        .password-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .password-box {
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            padding: 35px 25px;
+        }
+
+        .password-box .small-text {
+            font-size: 10px;
+            letter-spacing: 5px;
+            color: #aaa;
+            margin-bottom: 25px;
+        }
+
+        .password-box h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(38px, 8vw, 55px);
+            font-weight: 300;
+            margin-bottom: 12px;
+        }
+
+        .password-box p {
+            color: #aaa;
+            font-size: 13px;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .password-box .password-aside {
+            margin-top: -18px;
+            margin-bottom: 24px;
+            font-size: 11px;
+            color: #888;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255,255,255,.05);
+            border: 1px solid rgba(255,255,255,.25);
+            border-radius: 2px;
+            color: white;
+            text-align: center;
+            outline: none;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .password-input:focus {
+            border-color: #ddd;
+        }
+
+        .password-input::placeholder {
+            color: #777;
+            letter-spacing: 2px;
+        }
+
+        .enter-button {
+            width: 100%;
+            padding: 14px;
+            background: #eee;
+            color: #111;
+            border: none;
+            cursor: pointer;
+            letter-spacing: 3px;
+            font-size: 11px;
+            transition: .3s;
+        }
+
+        .enter-button:hover {
+            background: #ccc;
+        }
+
+        .error-message {
+            color: #d99b9b;
+            font-size: 12px;
+            margin-top: 15px;
+            min-height: 18px;
+        }
+
+        /* MAIN WEBSITE */
+
+        .main-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 1.2s ease;
+        }
+
+        .main-content.visible {
+            display: block;
+            opacity: 1;
+        }
+
+        section {
+            width: 100%;
+            padding: 100px 24px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        /* HERO */
+
+        .hero {
+            min-height: 100vh;
+            min-height: 100svh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding-top: 70px;
+            padding-bottom: 70px;
+        }
+
+        .hero-label {
+            font-size: 10px;
+            letter-spacing: 6px;
+            color: #bbb;
+            margin-bottom: 30px;
+        }
+
+        .hero h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300;
+            font-size: clamp(48px, 10vw, 90px);
+            line-height: 1.05;
+            max-width: 900px;
+        }
+
+        .hero-description {
+            color: #bbb;
+            font-size: 13px;
+            line-height: 2;
+            margin-top: 25px;
+            max-width: 400px;
+        }
+
+        .scroll-text {
+            position: absolute;
+            bottom: 35px;
+            font-size: 9px;
+            letter-spacing: 4px;
+            color: #aaa;
+            animation: float 2s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(7px); }
+        }
+
+        /* GENERAL SECTION STYLE */
+
+        .section-label {
+            text-align: center;
+            color: #aaa;
+            font-size: 10px;
+            letter-spacing: 5px;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
+            text-align: center;
+            font-weight: 300;
+            font-size: clamp(35px, 7vw, 55px);
+            margin-bottom: 30px;
+        }
+
+        /* CONFESSION LETTER */
+
+        .letter-section {
+            background: rgba(0,0,0,.28);
+        }
+
+        .letter {
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 45px 35px;
+            background: rgba(255,255,255,.035);
+            border: 1px solid rgba(255,255,255,.12);
+            backdrop-filter: blur(8px);
+        }
+
+        .letter p {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(19px, 3vw, 23px);
+            line-height: 1.9;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        .letter .greeting {
+            font-size: 27px;
+            color: white;
+        }
+
+        .letter .signature {
+            margin-top: 35px;
+            font-style: italic;
+            color: #aaa;
+        }
+
+        /* SPOTIFY MUSIC PLAYER */
+
+        .music-section {
+            text-align: center;
+            background: rgba(0,0,0,.22);
+        }
+
+        .music-card {
+            width: 100%;
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 35px 30px;
+            background: rgba(255,255,255,.045);
+            border: 1px solid rgba(255,255,255,.14);
+            backdrop-filter: blur(10px);
+        }
+
+        .music-label {
+            font-size: 10px;
+            letter-spacing: 5px;
+            color: #aaa;
+            margin-bottom: 18px;
+        }
+
+        .music-card h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(30px, 6vw, 43px);
+            font-weight: 400;
+            margin-bottom: 5px;
+        }
+
+        .music-artist {
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: #aaa;
+            margin-bottom: 25px;
+        }
+
+        .spotify-player {
+            width: 100%;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        .spotify-player iframe {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            height: 352px;
+            border: none;
+            border-radius: 12px;
+        }
+
+        .music-caption {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 19px;
+            font-style: italic;
+            color: #bbb;
+            margin-top: 25px;
+        }
+
+        .music-fallback {
+            margin-top: 16px;
+            color: #999;
+            font-size: 11px;
+            line-height: 1.8;
+        }
+
+        .music-fallback a {
+            color: #ddd;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        .music-fallback a:hover {
+            color: white;
+        }
+
+        /* SONG QUOTES */
+
+        .quotes-section {
+            text-align: center;
+        }
+
+        .quote-card {
+            max-width: 600px;
+            margin: 25px auto;
+            padding: 35px 25px;
+            border-top: 1px solid rgba(255,255,255,.2);
+            border-bottom: 1px solid rgba(255,255,255,.2);
+        }
+
+        .quote-card p {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(21px, 4vw, 29px);
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        .song-credit {
+            color: #999;
+            font-size: 10px;
+            letter-spacing: 2px;
+            margin-top: 20px;
+        }
+
+        /* DATE INVITATION */
+
+        .date-section {
+            background: rgba(0,0,0,.35);
+            text-align: center;
+        }
+
+        .date-description {
+            max-width: 550px;
+            margin: 0 auto;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(20px, 3vw, 25px);
+            line-height: 1.8;
+            color: #ccc;
+        }
+
+        .date-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 35px;
+        }
+
+        .date-button {
+            min-width: 180px;
+            padding: 15px 25px;
+            border: 1px solid rgba(255,255,255,.6);
+            background: transparent;
+            color: white;
+            font-size: 11px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: .3s;
+        }
+
+        .date-button:hover {
+            background: white;
+            color: black;
+        }
+
+        .date-button.primary {
+            background: white;
+            color: black;
+        }
+
+        .date-button.primary:hover {
+            background: #ccc;
+        }
+
+        .response-message {
+            min-height: 30px;
+            margin-top: 30px;
+            color: #ddd;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            line-height: 1.5;
+        }
+
+        /* FOOTER */
+
+        footer {
+            padding: 35px 20px;
+            text-align: center;
+            color: #888;
+            font-size: 9px;
+            letter-spacing: 4px;
+        }
+
+        /* RESPONSIVE DESIGN */
+
+        @media (max-width: 600px) {
+            section {
+                padding: 75px 18px;
+            }
+
+            .hero {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            .hero-label {
+                letter-spacing: 4px;
+            }
+
+            .letter {
+                padding: 30px 22px;
+            }
+
+            .music-card {
+                padding: 28px 17px;
+            }
+
+            .spotify-player iframe {
+                height: 352px;
+            }
+
+            .date-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .date-button {
+                width: 100%;
+                max-width: 300px;
+                min-height: 48px;
+            }
+
+            .scroll-text {
+                bottom: 25px;
+            }
+        }
+
+        @media (min-width: 601px) and (max-width: 1024px) {
+            section {
+                padding: 90px 35px;
+            }
+
+            .container {
+                max-width: 750px;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 900px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .password-box {
+                padding: 25px 12px;
+            }
+
+            .password-box h1 {
+                font-size: 38px;
+            }
+
+            .letter {
+                padding: 25px 17px;
+            }
+
+            .music-card {
+                padding: 25px 12px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                scroll-behavior: auto !important;
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- PASSWORD SCREEN -->
+
+    <div class="password-screen" id="passwordScreen">
+        <div class="password-box">
+
+            <p class="small-text">A LITTLE SOMETHING FOR YOU</p>
+
+            <h1>Before You Begin</h1>
+
+            <p>
+                Somewhere between a thousand thoughts,
+                you became my favorite one.
+            </p>
+
+            <p class="password-aside">
+                BTW sorry daan sa mga naka capital ang mga first letters HHAHAHAHAHHA
+            </p>
+
+            <input
+                type="password"
+                id="passwordInput"
+                class="password-input"
+                placeholder="enter the password"
+                autocomplete="off"
+            >
+
+            <button class="enter-button" onclick="checkPassword()">
+                OPEN
+            </button>
+
+            <div class="error-message" id="errorMessage"></div>
+
+        </div>
+    </div>
+
+
+    <!-- MAIN WEBSITE -->
+
+    <main class="main-content" id="mainContent">
+
+        <!-- HERO SECTION -->
+
+        <section class="hero">
+
+            <p class="hero-label">SOMETHING I'VE BEEN WANTING TO SAY</p>
+
+            <h1>With or Without<br>a Chance.</h1>
+
+            <p class="hero-description">
+                There are things that are easier to write
+                than to say out loud. So, I made this for you.
+            </p>
+
+            <p class="scroll-text">SCROLL TO READ</p>
+
+        </section>
+
+
+        <!-- CONFESSION LETTER -->
+
+        <section class="letter-section">
+
+            <div class="container">
+
+                <p class="section-label">A LETTER FOR YOU</p>
+
+                <h2 class="section-title">Something Honest</h2>
+
+                <div class="letter">
+
+                    <p class="greeting">Dear Kiesha,</p>
+
+                    <p>
+                        I know this is out of nowhere, pero I like you,
+                        Kiesha. You don't have to feel the same way,
+                        I just thought you should know.
+                    </p>
+
+                    <p>
+                        Would you let me pursue you? I want to know you
+                        more and I want to get a chance to enter your life.
+                    </p>
+
+                    <p>
+                        If you give me this chance, I would really prove
+                        to you that I was worth giving a chance.
+                    </p>
+
+                    <p>
+                        I don't expect you to have an answer right away.
+                        I just wanted to be honest about how I feel.
+                    </p>
+
+                    <p class="signature">
+                        — Someone who genuinely likes you.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SPOTIFY MUSIC PLAYER -->
+
+        <section class="music-section">
+
+            <div class="container">
+
+                <p class="section-label">A SONG I WANT YOU TO HEAR</p>
+
+                <div class="music-card">
+
+                    <p class="music-label">A LITTLE SONG FOR YOU</p>
+
+                    <h2>You're All I Want</h2>
+
+                    <p class="music-artist">
+                        CIGARETTES AFTER SEX
+                    </p>
+
+                    <div class="spotify-player">
+
+                        <iframe
+                            data-testid="embed-iframe"
+                            style="border-radius:12px"
+                            src="https://open.spotify.com/embed/track/2cTvZSCqzjkTMkIypLxUFH?utm_source=generator&si=987e68ff6d734551"
+                            width="100%"
+                            height="352"
+                            frameborder="0"
+                            allowfullscreen
+                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                            loading="lazy">
+                        </iframe>
+
+                    </div>
+
+                    <p class="music-caption">
+                        I thought this song would be nice for you to hear. ♡
+                    </p>
+
+                    <p class="music-fallback">
+                        Having trouble playing it?
+                        <a
+                            href="https://open.spotify.com/track/2cTvZSCqzjkTMkIypLxUFH"
+                            target="_blank"
+                            rel="noopener noreferrer">
+                            Open Spotify
+                        </a>
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SONG-INSPIRED QUOTES -->
+
+        <section class="quotes-section">
+
+            <div class="container">
+
+                <p class="section-label">A FEW WORDS</p>
+
+                <h2 class="section-title">Little Reminders</h2>
+
+                <div class="quote-card">
+
+                    <p>
+                        "And now you're all I think about
+						when I'm alone"
+                    </p>
+
+                    <div class="song-credit">
+                        "CRUSH" — CIGARETTES AFTER SEX
+                    </div>
+
+                </div>
+
+                <div class="quote-card">
+
+                    <p>
+                        "I felt that my heart was falling
+						You're all I want"
+                    </p>
+
+                    <div class="song-credit">
+                        "YOU'RE ALL I WANT" — CIGARETTES AFTER SEX
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SUNDAY INVITATION -->
+
+        <section class="date-section">
+
+            <div class="container">
+
+                <p class="section-label">ONE LAST THING</p>
+
+                <h2 class="section-title">
+                    Can I Take You Out This Sunday?
+                </h2>
+
+                <p class="date-description">
+                    Would you like to go to church together, and afterwards,
+                    maybe we could go out and get something to eat?
+                    <br><br>
+                    I'd really love to spend some time with you
+                    and get to know you better.
+                </p>
+
+                <div class="date-buttons">
+
+                    <button
+                        class="date-button primary"
+                        onclick="respond('yes')">
+                        YES, I'D LOVE TO.
+                    </button>
+
+                    <button
+                        class="date-button"
+                        onclick="respond('maybe')">
+                        LET ME THINK ABOUT IT.
+                    </button>
+
+                </div>
+
+                <div
+                    class="response-message"
+                    id="responseMessage"
+                    aria-live="polite">
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- FOOTER -->
+
+        <footer>
+            MADE WITH SINCERITY · JUST FOR YOU
+        </footer>
+
+    </main>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script>
+
+        // PASSWORD CHECK
+
+        const correctPassword = "kowens";
+
+        function checkPassword() {
+
+            const enteredPassword =
+                document.getElementById("passwordInput").value;
+
+            const errorMessage =
+                document.getElementById("errorMessage");
+
+            if (enteredPassword === correctPassword) {
+
+                const passwordScreen =
+                    document.getElementById("passwordScreen");
+
+                const mainContent =
+                    document.getElementById("mainContent");
+
+                passwordScreen.classList.add("hidden");
+
+                mainContent.classList.add("visible");
+
+                document.body.style.overflowX = "hidden";
+
+            } else {
+
+                errorMessage.textContent =
+                    "That doesn't seem right. Try again.";
+
+            }
+
+        }
+
+
+        // PRESS ENTER TO OPEN
+
+        document.getElementById("passwordInput")
+            .addEventListener("keydown", function(event) {
+
+                if (event.key === "Enter") {
+                    checkPassword();
+                }
+
+            });
+
+
+        // DATE INVITATION RESPONSES
+
+        function respond(answer) {
+
+            const message =
+                document.getElementById("responseMessage");
+
+            if (answer === "yes") {
+
+                message.textContent =
+                    "That makes me happy. I'll look forward to Sunday. ♡";
+
+            } else if (answer === "maybe") {
+
+                message.textContent =
+                    "Of course. Take your time. No pressure at all. ♡";
+
+            }
+
+        }
+
+    </script>
+
+</body>
+</html>
